@@ -52,6 +52,7 @@ public class RequestController : ControllerBase
         try
         {
             return Ok(await _db.Requests
+            .Where(x => x.Status != "A")
             .Select(x => new RequestList
             {
                 Id = x.Id,
@@ -63,6 +64,134 @@ public class RequestController : ControllerBase
         catch (Exception ex)
         {
             Console.Write(ex);
+            return StatusCode(500);
+        }
+    }
+
+    [HttpGet("approvalslist")]
+    public async Task<IActionResult> ApprovalsList()
+    {
+        try
+        {
+            return Ok(await _db.Requests
+            .Where(x => x.Status == "A")
+            .Select(x => new RequestList
+            {
+                Id = x.Id,
+                DateCreated = x.DateCreated,
+                Discipline = x.Discipline,
+                Status = x.Status
+            }).ToListAsync());
+        }
+        catch (Exception ex)
+        {
+            Console.Write(ex);
+            return StatusCode(500);
+        }
+    }
+
+    [HttpGet("detailedassess/{id}")]
+    public async Task<IActionResult> DetailedReq(int id)
+    {
+        try
+        {
+            return Ok(await _db.Requests
+            .Where(x => x.Id == id)
+            .Select(x => new DetailedRequest
+            {
+                Id = x.Id,
+                DateCreated = x.DateCreated,
+                UserCreated = x.UserCreated,
+                Department = x.Department,
+                LocationRoom = x.LocationRoom,
+                Facility = x.Facility,
+                Discipline = x.Discipline,
+                NewComment = x.NewComment,
+                Status = x.Status
+            }).FirstOrDefaultAsync());
+        }
+        catch (Exception ex)
+        {
+            Console.Write(ex);
+            return StatusCode(500);
+        }
+    }
+
+    [HttpGet("detailedapprove/{id}")]
+    public async Task<IActionResult> DetailedApprove(int id)
+    {
+        try
+        {
+            return Ok(await _db.Requests
+            .Where(x => x.Id == id)
+            .Select(x => new DetailedApprove
+            {
+                Id = x.Id,
+                DateCreated = x.DateCreated,
+                UserCreated = x.UserCreated,
+                Department = x.Department,
+                LocationRoom = x.LocationRoom,
+                Facility = x.Facility,
+                Discipline = x.Discipline,
+                NewComment = x.NewComment,
+                Status = x.Status,
+                ResponseTime = x.ResponseTime,
+                EmergencyNormal = x.EmergencyNormal,
+                AssessComment = x.AssessComment
+            }).FirstOrDefaultAsync());
+        }
+        catch (Exception ex)
+        {
+            Console.Write(ex);
+            return StatusCode(500);
+        }
+    }
+
+    [HttpPost("assessment")]
+    public async Task<IActionResult> Assessment(Assessment req)
+    {
+        try
+        {
+            var temp = await _db.Requests.Where(x => x.Id == req.Id).FirstOrDefaultAsync();
+
+            temp.ResponseTime = req.ResponseTime;
+            temp.EmergencyNormal = req.EmergencyNormal;
+            temp.AssessComment = req.Comment;
+            temp.AssessUser = req.User;
+            temp.LastUpdated = DateTime.UtcNow;
+            temp.UserLastUpdated = req.User;
+            temp.Status = "A";
+
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(500);
+        }
+    }
+
+    [HttpPost("Approval")]
+    public async Task<IActionResult> Approval(Approval req)
+    {
+        try
+        {
+            var temp = await _db.Requests.Where(x => x.Id == req.Id).FirstOrDefaultAsync();
+
+            temp.ApproveMandate = req.ApproveMandate;
+            temp.ApproveComment = req.Comment;
+            temp.ApproveUser = req.User;
+            temp.LastUpdated = DateTime.UtcNow;
+            temp.UserLastUpdated = req.User;
+            temp.Status = "AA";
+
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
             return StatusCode(500);
         }
     }

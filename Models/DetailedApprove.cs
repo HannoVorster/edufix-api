@@ -1,6 +1,6 @@
-namespace EduFix_Api.Data
+namespace EduFix_Api.Models
 {
-    public class Requests
+    public class DetailedApprove
     {
         public int Id { get; set; }
         public DateTime DateCreated { get; set; }
@@ -10,15 +10,9 @@ namespace EduFix_Api.Data
         public string? Facility { get; set; }
         public string? Discipline { get; set; }
         public string? NewComment { get; set; }
-        public DateTime LastUpdated { get; set; }
-        public string? UserLastUpdated { get; set; }
         public string? Status { get; set; }
         public string? ResponseTime { get; set; }
         public string? EmergencyNormal { get; set; }
         public string? AssessComment { get; set; }
-        public string? AssessUser { get; set; }
-        public string? ApproveMandate { get; set; }
-        public string? ApproveComment { get; set; }
-        public string? ApproveUser { get; set; }
     }
 }
