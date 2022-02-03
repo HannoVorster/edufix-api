@@ -147,6 +147,39 @@ public class RequestController : ControllerBase
         }
     }
 
+    [HttpGet("detailedcontractor/{id}")]
+    public async Task<IActionResult> DetailedContractor(int id)
+    {
+        try
+        {
+            return Ok(await _db.Requests
+            .Where(x => x.Id == id)
+            .Select(x => new DetailedContractor
+            {
+                Id = x.Id,
+                DateCreated = x.DateCreated,
+                UserCreated = x.UserCreated,
+                Department = x.Department,
+                LocationRoom = x.LocationRoom,
+                Facility = x.Facility,
+                Discipline = x.Discipline,
+                NewComment = x.NewComment,
+                Status = x.Status,
+                ResponseTime = x.ResponseTime,
+                EmergencyNormal = x.EmergencyNormal,
+                AssessComment = x.AssessComment,
+                ApproveMandate = x.ApproveMandate,
+                ApproveComment = x.ApproveComment,
+                ApproveUser = x.ApproveUser
+            }).FirstOrDefaultAsync());
+        }
+        catch (Exception ex)
+        {
+            Console.Write(ex);
+            return StatusCode(500);
+        }
+    }
+
     [HttpPost("assessment")]
     public async Task<IActionResult> Assessment(Assessment req)
     {
@@ -172,7 +205,7 @@ public class RequestController : ControllerBase
         }
     }
 
-    [HttpPost("Approval")]
+    [HttpPost("approval")]
     public async Task<IActionResult> Approval(Approval req)
     {
         try
